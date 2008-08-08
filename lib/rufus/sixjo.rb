@@ -40,10 +40,11 @@ module Rufus
     #
     class App
 
-      def initialize (next_app, routes, options)
+      def initialize (next_app, routes, helpers, options)
 
         @next_app = next_app
-        @routes = routes
+        @routes = routes || [] # the 'no route' case is rather useless...
+        @helpers = helpers || []
 
         @prefix = options[:prefix] || ''
         @rprefix = Regexp.new(@prefix)
@@ -54,7 +55,7 @@ module Rufus
         block = lookup_block(env)
 
         if block
-          Context.service(block, env)
+          Context.service(block, @helpers, env)
         elsif @next_app
           @next_app.call(env)
         else
@@ -102,8 +103,9 @@ module Rufus
         @params ||= @request.params.merge(@request.env['_ROUTE_PARAMS'])
       end
 
-      def self.service (block, env)
+      def self.service (block, helpers, env)
         r = self.new(env)
+        helpers.each { |h| r.instance_eval &h }
         r.metaclass.instance_eval { define_method :call, &block }
         r.response.body = r.call
         r.response.finish
@@ -155,11 +157,14 @@ module Rufus
     #++
     [ :post, :get, :put, :delete ].each do |v|
       module_eval <<-EOS
-        def #{v} (route, options={}, &block)
-          @routes = [] unless @routes
-          @routes << [ '#{v.to_s.upcase}', Route.new(route, options), block ]
+        def #{v} (rt, opts={}, &blk)
+          (@routes ||= []) << [ '#{v.to_s.upcase}', Route.new(rt, opts), blk ]
         end
       EOS
+    end
+
+    def helpers (&block)
+      (@helpers ||= []) << block
     end
 
     #
@@ -169,7 +174,7 @@ module Rufus
     # Returns an instance of Rufus::Sixjo::App
     #
     def new_rack_application (next_app, options={})
-      App.new(next_app, @routes, options)
+      App.new(next_app, @routes, @helpers, options)
     end
   end
 end
