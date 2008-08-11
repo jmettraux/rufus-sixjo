@@ -26,6 +26,7 @@
 # "made in Japan"
 #
 
+require 'erb'
 require 'rack'
 
 
@@ -82,9 +83,38 @@ module Rufus
     end
 
     #
+    # ERB views
+    #
+    module Erb
+
+      class Local
+        def initialize (locals)
+          @locals = locals
+        end
+        def method_missing (m, *args)
+          @locals[m.to_sym]
+        end
+        def get_binding
+          binding
+        end
+      end
+
+      def erb (template, options = {})
+
+        content = File.open("views/#{template}.erb").read
+
+        l = Local.new(options.delete(:locals) || {})
+
+        ::ERB.new(content).result(l.get_binding)
+      end
+    end
+
+    #
     # The context in which an HTTP request is handled
     #
     class Context
+
+      include Erb
 
       def metaclass
         class << self
@@ -124,7 +154,7 @@ module Rufus
 
           r.response.status = 500
           r.response.header['Content-type'] = 'text/plain'
-          r.response.body = e.backtrace.join("\n")
+          r.response.body = e.to_s + "\n" + e.backtrace.join("\n")
         end
 
         r.response.finish
