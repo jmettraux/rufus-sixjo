@@ -99,16 +99,46 @@ module Rufus
         @response = Rack::Response.new
       end
 
+      def self.service (block, helpers, env)
+
+        r = self.new(env)
+
+        helpers.each { |h| r.instance_eval &h }
+
+        r.metaclass.instance_eval { define_method :call, &block }
+
+        begin
+
+          caught = catch :done do
+            r.response.body = r.call
+            nil
+          end
+
+          if caught
+            puts caught.inspect
+            r.response.status = caught[0]
+            r.response.body = caught[1]
+          end
+
+        rescue Exception => e
+
+          r.response.status = 500
+          r.response.header['Content-type'] = 'text/plain'
+          r.response.body = e.backtrace.join("\n")
+        end
+
+        r.response.finish
+      end
+
       def params
         @params ||= @request.params.merge(@request.env['_ROUTE_PARAMS'])
       end
 
-      def self.service (block, helpers, env)
-        r = self.new(env)
-        helpers.each { |h| r.instance_eval &h }
-        r.metaclass.instance_eval { define_method :call, &block }
-        r.response.body = r.call
-        r.response.finish
+      def redirect (path, status = 303)
+        @response.status = status
+        @response.header['Location'] = path
+        @response.body = "#{status} redirecting to #{path}"
+        throw :done
       end
     end
 
@@ -163,7 +193,17 @@ module Rufus
       EOS
     end
 
+    #
+    # for example :
+    #
+    #   helpers do
+    #     def hello
+    #       "hello #{params['who']}"
+    #     end
+    #   end
+    #
     def helpers (&block)
+
       (@helpers ||= []) << block
     end
 
@@ -174,6 +214,7 @@ module Rufus
     # Returns an instance of Rufus::Sixjo::App
     #
     def new_rack_application (next_app, options={})
+
       App.new(next_app, @routes, @helpers, options)
     end
   end
