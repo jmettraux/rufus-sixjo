@@ -24,6 +24,10 @@ module ErbApp
   get '/good' do
     erb 'view0', :locals => { :life => 'good' }
   end
+
+  get '/good2' do
+    erb :view0, :locals => { :life => 'good' }
+  end
 end
 
 class ErbTest < Test::Unit::TestCase
@@ -31,7 +35,7 @@ class ErbTest < Test::Unit::TestCase
 
   def setup
 
-    @app = ErbApp.new_rack_application(nil)
+    @app = ErbApp.new_sixjo_rack_app(nil, :environment => 'test')
 
     fn = 'views/view0.erb'
 
@@ -46,6 +50,9 @@ class ErbTest < Test::Unit::TestCase
     assert_equal 'this is view0, life is', @response.body.strip
 
     assert_equal 200, get('/good').status
+    assert_equal 'this is view0, life is good', @response.body.strip
+
+    assert_equal 200, get('/good2').status
     assert_equal 'this is view0, life is good', @response.body.strip
   end
 end

@@ -29,7 +29,7 @@ class SimpleTest < Test::Unit::TestCase
   include SixjoTestMixin
 
   def setup
-    @app = Simple.new_rack_application(nil)
+    @app = Simple.new_sixjo_rack_app(nil, :environment => 'test')
   end
 
   def test_0

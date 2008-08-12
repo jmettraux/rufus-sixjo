@@ -4,20 +4,19 @@
 require 'rubygems'
 require 'lib/rufus/sixjo'
 
-module ExampleOne
+extend Rufus::Sixjo
 
-  extend Rufus::Sixjo
-
-  get '/toto' do
-    "nada at #{request.path_info}"
-  end
+get '/toto' do
+  "nada at #{request.path_info}"
 end
+
+six = new_sixjo_rack_app(nil)
 
 app = Rack::Builder.new do
 
   use Rack::CommonLogger
   use Rack::ShowExceptions
-  run ExampleOne.new_sixjo_rack_app(nil)
+  run six
 end
 
 Rack::Handler::Mongrel.run app, :Port => 2042 # 1021 * 2

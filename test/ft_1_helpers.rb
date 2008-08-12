@@ -31,7 +31,7 @@ class HelpersTest < Test::Unit::TestCase
   include SixjoTestMixin
 
   def setup
-    @app = WithHelper.new_rack_application(nil)
+    @app = WithHelper.new_sixjo_rack_app(nil, :environment => 'test')
   end
 
   def test_0

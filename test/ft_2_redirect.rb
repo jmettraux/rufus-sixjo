@@ -25,7 +25,7 @@ class RedirectTest < Test::Unit::TestCase
   include SixjoTestMixin
 
   def setup
-    @app = RedirectApp.new_rack_application(nil)
+    @app = RedirectApp.new_sixjo_rack_app(nil, :environment => 'test')
   end
 
   def test_0

@@ -41,14 +41,26 @@ module Rufus
     #
     class App
 
-      def initialize (next_app, routes, helpers, options)
+      attr_reader :environment
+
+      def initialize (next_app, routes, helpers, configures, options)
 
         @next_app = next_app
         @routes = routes || [] # the 'no route' case is rather useless...
         @helpers = helpers || []
 
-        @prefix = options[:prefix] || ''
-        @rprefix = Regexp.new(@prefix)
+        #@prefix = options[:prefix] || ''
+        #@rprefix = Regexp.new(@prefix)
+
+        @environment = options[:environment] || 'development'
+        @environment = @environment.to_s
+
+        #
+        # run the configure blocks
+
+        (configures || []).each do |envs, block|
+          instance_eval(&block) if envs.empty? or envs.include?(@environment)
+        end
       end
 
       def call (env)
@@ -56,7 +68,7 @@ module Rufus
         block = lookup_block(env)
 
         if block
-          Context.service(block, @helpers, env)
+          Context.service(self, block, @helpers, env)
         elsif @next_app
           @next_app.call(env)
         else
@@ -68,9 +80,8 @@ module Rufus
 
         def lookup_block (env)
 
-          path = env['PATH_INFO']
-
-          return nil unless env['PATH_INFO'].match(@rprefix)
+          #path = env['PATH_INFO']
+          #return nil unless env['PATH_INFO'].match(@rprefix)
 
           @routes.each do |verb, route, block|
             next unless env['REQUEST_METHOD'] == verb
@@ -103,7 +114,8 @@ module Rufus
 
         content = File.open("views/#{template}.erb").read
 
-        l = Local.new(options.delete(:locals) || {})
+        l = options[:locals]
+        l = Local.new(l || {}) unless l.is_a?(Local)
 
         ::ERB.new(content).result(l.get_binding)
       end
@@ -122,16 +134,18 @@ module Rufus
         end
       end
 
+      attr_reader :application
       attr_reader :request, :response
 
-      def initialize (env)
+      def initialize (app, env)
+        @application = app
         @request = Rack::Request.new(env)
         @response = Rack::Response.new
       end
 
-      def self.service (block, helpers, env)
+      def self.service (app, block, helpers, env)
 
-        r = self.new(env)
+        r = self.new(app, env)
 
         helpers.each { |h| r.instance_eval &h }
 
@@ -238,14 +252,23 @@ module Rufus
     end
 
     #
+    # Code in the 'configure' block will be run inside the application
+    # instance.
+    #
+    def configure (*envs, &block)
+
+      (@configures ||= []) << [ envs.collect { |e| e.to_s }, block ]
+    end
+
+    #
     # Packages the routing info into a Rack application, suitable for
     # insertion into a Rack app chain.
     #
     # Returns an instance of Rufus::Sixjo::App
     #
-    def new_rack_application (next_app, options={})
+    def new_sixjo_rack_app (next_app, options={})
 
-      App.new(next_app, @routes, @helpers, options)
+      App.new(next_app, @routes, @helpers, @configures, options)
     end
   end
 end
