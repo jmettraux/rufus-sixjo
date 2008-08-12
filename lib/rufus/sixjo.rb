@@ -29,6 +29,12 @@
 require 'erb'
 require 'rack'
 
+class Rack::Response
+
+  def content_type= (t)
+    header['Content-type'] = t
+  end
+end
 
 module Rufus
 
@@ -61,6 +67,10 @@ module Rufus
         (configures || []).each do |envs, block|
           instance_eval(&block) if envs.empty? or envs.include?(@environment)
         end
+      end
+
+      def application
+        self
       end
 
       def call (env)
@@ -98,13 +108,24 @@ module Rufus
     #
     module Erb
 
+      #
+      # a local [context] for ERB views
+      #
       class Local
-        def initialize (locals)
+
+        def initialize (context, locals)
+          @context = context
           @locals = locals
         end
+
         def method_missing (m, *args)
           @locals[m.to_sym]
         end
+
+        def application; @context.application; end
+        def request; @context.request; end
+        def response; @context.response; end
+
         def get_binding
           binding
         end
@@ -115,7 +136,7 @@ module Rufus
         content = File.open("views/#{template}.erb").read
 
         l = options[:locals]
-        l = Local.new(l || {}) unless l.is_a?(Local)
+        l = Local.new(self, l || {}) unless l.is_a?(Local)
 
         ::ERB.new(content).result(l.get_binding)
       end
