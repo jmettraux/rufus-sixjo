@@ -119,12 +119,16 @@ module Rufus
         end
 
         def method_missing (m, *args)
-          @locals[m.to_sym]
+
+          l = @locals[m.to_sym]
+          return l if l != nil
+
+          @context.send(m, *args)
         end
 
-        def application; @context.application; end
-        def request; @context.request; end
-        def response; @context.response; end
+        #def application; @context.application; end
+        #def request; @context.request; end
+        #def response; @context.response; end
 
         def get_binding
           binding
