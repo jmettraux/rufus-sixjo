@@ -31,6 +31,9 @@ require 'rack'
 
 class Rack::Response
 
+  def location= (l)
+    header['Location'] = l
+  end
   def content_type= (t)
     header['Content-type'] = t
   end
@@ -163,9 +166,13 @@ module Rufus
       attr_reader :request, :response
 
       def initialize (app, env)
+
         @application = app
         @request = Rack::Request.new(env)
         @response = Rack::Response.new
+
+        @params = @request.params.merge(@request.env['_ROUTE_PARAMS'])
+        @params = @params.inject({}) { |r, (k, v)| r[k.to_sym] = v; r }
       end
 
       def self.service (app, block, helpers, env)
@@ -192,7 +199,7 @@ module Rufus
         rescue Exception => e
 
           r.response.status = 500
-          r.response.header['Content-type'] = 'text/plain'
+          r.response.content_type = 'text/plain'
           r.response.body = e.to_s + "\n" + e.backtrace.join("\n")
         end
 
@@ -200,13 +207,13 @@ module Rufus
       end
 
       def params
-        @params ||= @request.params.merge(@request.env['_ROUTE_PARAMS'])
+        @params
       end
 
-      def redirect (path, status = 303)
+      def redirect (path, status=303, body=nil)
         @response.status = status
-        @response.header['Location'] = path
-        @response.body = "#{status} redirecting to #{path}"
+        @response.location = path
+        @response.body = body || "#{status} redirecting to #{path}"
         throw :done
       end
     end

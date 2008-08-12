@@ -22,7 +22,7 @@ module WithHelper
 
   helpers do
     def hello
-      params['target']
+      params[:target]
     end
   end
 end
