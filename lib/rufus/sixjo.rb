@@ -29,6 +29,14 @@
 require 'erb'
 require 'rack'
 
+
+class Rack::Request
+
+  def content
+    @env['rack.request.form_vars']
+  end
+end
+
 class Rack::Response
 
   def location= (l)
@@ -38,6 +46,7 @@ class Rack::Response
     header['Content-type'] = t
   end
 end
+
 
 module Rufus
 
@@ -78,7 +87,15 @@ module Rufus
 
       def call (env)
 
-        block = lookup_block(env)
+        block = nil
+
+        begin
+          block = lookup_block(env)
+        rescue => e
+          #puts e
+          #puts e.backtrace
+          return [ 400, {}, e.to_s ]
+        end
 
         if block
           Context.service(self, block, @helpers, env)
@@ -91,18 +108,47 @@ module Rufus
 
       protected
 
+        H_METHODS = [ 'GET', 'POST', 'PUT', 'DELETE', 'HEAD', 'OPTIONS' ]
+        R_METHOD = /_method=(put|delete|PUT|DELETE)/
+        R_MULTIPART = /^multipart\/form-data;/
+
         def lookup_block (env)
 
-          #path = env['PATH_INFO']
-          #return nil unless env['PATH_INFO'].match(@rprefix)
+          request_method = get_request_method(env)
 
           @routes.each do |verb, route, block|
-            next unless env['REQUEST_METHOD'] == verb
+            next unless request_method == verb
             next unless route.match?(env)
             return block
           end
 
           nil
+        end
+
+        def get_request_method (env)
+
+          rm = env['X-HTTP-Method-Override'] || env['REQUEST_METHOD']
+          rm = rm.upcase
+
+          #puts env.inspect
+
+          if rm == 'POST'
+            md = R_METHOD.match(env['QUERY_STRING'])
+            rm = md[1].upcase if md
+
+            ct = env['CONTENT_TYPE']
+
+            if ct and R_MULTIPART.match(ct)
+              request = Rack::Request.new(env)
+              env['_rack_request'] = request # no need to rebuild later
+              hidden_method = request.POST['_method']
+              rm = hidden_method.upcase if hidden_method
+            end
+          end
+
+          raise "unknown HTTP method '#{rm}'" unless H_METHODS.include?(rm)
+
+          rm
         end
     end
 
@@ -168,7 +214,7 @@ module Rufus
       def initialize (app, env)
 
         @application = app
-        @request = Rack::Request.new(env)
+        @request = env.delete('_rack_request') || Rack::Request.new(env)
         @response = Rack::Response.new
 
         @params = @request.params.merge(@request.env['_ROUTE_PARAMS'])
@@ -186,12 +232,12 @@ module Rufus
         begin
 
           caught = catch :done do
-            r.response.body = r.call
+            r.response.body = r.call || []
             nil
           end
 
           if caught
-            puts caught.inspect
+            #puts caught.inspect
             r.response.status = caught[0]
             r.response.body = caught[1]
           end
