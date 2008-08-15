@@ -30,10 +30,10 @@ spec = Gem::Specification.new do |s|
   s.has_rdoc      = true
   s.extra_rdoc_files  = [ 'README.txt' ]
 
-  #[ 'rufus-lru' ].each do |d|
-  #  s.requirements << d
-  #  s.add_dependency d
-  #end
+  [ 'rack' ].each do |d|
+    s.requirements << d
+    s.add_dependency d
+  end
 
   files = FileList[ "{bin,lib,test}/**/*" ]
   files.exclude "rdoc"
