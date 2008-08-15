@@ -3,7 +3,7 @@
 
 == what is it ?
 
-just an experimentation.
+A 'Rack application' for
 
 
 == features
@@ -20,7 +20,30 @@ or download[http://rubyforge.org/frs/?group_id=4812] it from RubyForge.
 
 == usage
 
-none for now
+see under the examples/ directory : http://github.com/jmettraux/rufus-sixjo/tree/master/examples
+
+It goes like :
+
+    require 'rubygems'
+    require 'rufus/sixjo' # gem 'rufus-sixjo'
+    
+    module ExampleOne
+    
+      extend Rufus::Sixjo
+      
+      get '/toto' do
+        "nada at #{request.path_info}"
+      end
+    end
+      
+    app = Rack::Builder.new do
+      
+      use Rack::CommonLogger
+      use Rack::ShowExceptions
+      run ExampleOne.new_sixjo_rack_app(nil)
+    end
+    
+    Rack::Handler::Mongrel.run app, :Port => 2042
 
 
 == dependencies

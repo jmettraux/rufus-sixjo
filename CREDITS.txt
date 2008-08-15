@@ -1,0 +1,5 @@
+
+= CREDITS.txt
+
+Based on the fine 'Rack' gem by Christian Neukirchen : http://github.com/chneukirchen/rack
+
