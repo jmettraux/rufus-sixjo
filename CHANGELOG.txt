@@ -1,6 +1,12 @@
 
 = rufus-sixjo CHANGELOG.txt
 
+
+== rufus-sixjo - 0.1.1   not yet released
+
+- todo #21637 :   upgraded to rack 0.4.0
+
+
 == rufus-sixjo - 0.1.0   released 2008/08/15
 
 - initial release

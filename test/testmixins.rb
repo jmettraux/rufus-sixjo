@@ -11,6 +11,12 @@ require 'rubygems'
 require 'rufus/sixjo'
 
 
+class NilClass
+  def empty?
+    true
+  end
+end
+
 module SixjoTestMixin
 
   [ :post, :get, :put, :delete ].each do |v|
