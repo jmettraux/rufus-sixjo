@@ -42,5 +42,13 @@ module SixjoTestMixin
     end
     ret << "--#{MFD_BOUNDARY}--\r\n"
   end
+
+  def save_view (filename, content)
+
+    FileUtils.mkdir('views') unless File.exist?('views')
+
+    FileUtils.rm(filename) if File.exist?(filename)
+    File.open(filename, 'w') { |f| f.write(content) }
+  end
 end
 

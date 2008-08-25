@@ -32,6 +32,9 @@ require 'rack'
 
 class Rack::Request
 
+  #
+  # not sure about this one, might vanish soon
+  #
   def content
     @env['rack.request.form_vars']
   end
@@ -52,7 +55,7 @@ module Rufus
 
   module Sixjo
 
-    VERSION = "0.1.0"
+    VERSION = '0.1.0'
 
     #
     # Sixjo's Rack app
@@ -186,7 +189,7 @@ module Rufus
 
       def erb (template, options = {})
 
-        content = File.open("views/#{template}.erb").read
+        content = File.read("views/#{template}.erb")
 
         l = options[:locals]
         l = Local.new(self, l || {}) unless l.is_a?(Local)
@@ -254,6 +257,10 @@ module Rufus
 
       def params
         @params
+      end
+
+      def h (text)
+        Rack::Utils.escape_html(text)
       end
 
       def redirect (path, status=303, body=nil)

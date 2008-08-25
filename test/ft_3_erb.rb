@@ -41,17 +41,8 @@ class ErbTest < Test::Unit::TestCase
 
     @app = ErbApp.new_sixjo_rack_app(nil, :environment => 'test')
 
-    FileUtils.mkdir('views') unless File.exist?('views')
-
-    fn = 'views/view0.erb'
-
-    FileUtils.rm(fn) if File.exist?(fn)
-    File.open(fn, 'w') { |f| f.write "this is view0, life is <%= life %>" }
-
-    fn = 'views/view1.erb'
-
-    FileUtils.rm(fn) if File.exist?(fn)
-    File.open(fn, 'w') { |f| f.write "<%= request.path_info %>" }
+    save_view('views/view0.erb', 'this is view0, life is <%= life %>')
+    save_view('views/view1.erb', '<%= request.path_info %>')
   end
 
   def test_0
