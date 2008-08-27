@@ -10,6 +10,16 @@
 require 'rubygems'
 require 'rufus/sixjo'
 
+#class Rack::MockResponse
+#  alias :old_init :initialize
+#  def initialize (s, h, b, errors=nil)
+#    puts
+#    p [ :status, s ]
+#    p [ :headers, h ]
+#    p [ :body, b ]
+#    old_init(s, h, b, errors)
+#  end
+#end
 
 class NilClass
   def empty?

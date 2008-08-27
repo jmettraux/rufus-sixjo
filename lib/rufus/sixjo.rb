@@ -38,6 +38,13 @@ class Rack::Request
   def content
     @env['rack.request.form_vars']
   end
+
+  #
+  # returns an array of ETags
+  #
+  def etags
+    (@env['HTTP_IF_NONE_MATCH'] || '').split(/\s*,\s*/)
+  end
 end
 
 class Rack::Response
@@ -55,7 +62,7 @@ module Rufus
 
   module Sixjo
 
-    VERSION = '0.1.0'
+    VERSION = '0.1.1'
 
     #
     # Sixjo's Rack app
@@ -240,7 +247,7 @@ module Rufus
           end
 
           if caught
-            #puts caught.inspect
+            caught = Array(caught)
             r.response.status = caught[0]
             r.response.body = caught[1]
           end
@@ -268,6 +275,24 @@ module Rufus
         @response.location = path
         @response.body = body || "#{status} redirecting to #{path}"
         throw :done
+      end
+
+      #
+      # throws 304 as needed
+      #
+      def set_etag (t, weak=false)
+
+        t = '"%s"' % t
+        t = weak ? "W/#{t}" : t
+
+        @response.header['ETag'] = t
+
+        etags = @request.etags
+
+        if etags.include?(t) or etags.include?('*')
+          throw(:done, 304) if @request.get? or @request.head?
+          throw(:done, 412)
+        end
       end
     end
 
