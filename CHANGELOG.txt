@@ -4,6 +4,7 @@
 
 == rufus-sixjo - 0.1.1   not yet released
 
+- todo  #21693 : added set_last_modified() throws 204 if needed)
 - todo  #21689 : added set_etag() (throws 304 if needed)
 - todo  #21660 : added h(text) method in context
 - todo  #21637 : upgraded to rack 0.4.0

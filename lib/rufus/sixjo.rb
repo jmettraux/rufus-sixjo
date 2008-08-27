@@ -29,6 +29,9 @@
 require 'erb'
 require 'rack'
 
+require 'time'
+require 'date'
+
 
 class Rack::Request
 
@@ -291,7 +294,34 @@ module Rufus
 
         if etags.include?(t) or etags.include?('*')
           throw(:done, 304) if @request.get? or @request.head?
-          throw(:done, 412)
+          throw(:done, 412) # precondition failed
+        end
+      end
+
+      #
+      # throws 304 as needed
+      #
+      def set_last_modified (t)
+
+        t = Time.local(*t.to_a) # flatten milliseconds
+
+        @response.header['Last-Modified'] = t.httpdate
+
+        sin = @request.env['HTTP_IF_MODIFIED_SINCE']
+
+        return unless sin
+
+        # taken from the "Ruby Cookbook" by
+        # Lucas Carlson and Leonard Richardson
+        #
+        sin = DateTime.parse(sin)
+        sin = sin.new_offset(DateTime.now.offset - sin.offset)
+        sin = Time.local(
+          sin.year, sin.month, sin.day, sin.hour, sin.min, sin.sec, 0)
+
+        if sin >= t
+          throw(:done, 304) if @request.get? or @request.head?
+          throw(:done, 412) # precondition failed
         end
       end
     end
