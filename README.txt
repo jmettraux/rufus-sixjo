@@ -8,7 +8,7 @@ A 'Rack application' for
 
 == features
 
-not many.
+Does the conditional GET thing.
 
 
 == getting it

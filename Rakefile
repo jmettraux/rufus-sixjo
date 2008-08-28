@@ -15,20 +15,20 @@ require 'lib/rufus/sixjo' # Rufus::Sixjo::VERSION
 
 spec = Gem::Specification.new do |s|
 
-  s.name        = "rufus-sixjo"
-  s.version       = Rufus::Sixjo::VERSION
-  s.authors       = [ "John Mettraux" ]
-  s.email       = "john at gmail dot com"
-  s.homepage      = "http://rufus.rubyforge.org/rufus-sixjo"
-  s.platform      = Gem::Platform::RUBY
-  s.summary       = "a rack application"
-  #s.license       = "MIT"
+  s.name = "rufus-sixjo"
+  s.version = Rufus::Sixjo::VERSION
+  s.authors = [ "John Mettraux" ]
+  s.email = "john at gmail dot com"
+  s.homepage = "http://rufus.rubyforge.org/rufus-sixjo"
+  s.platform = Gem::Platform::RUBY
+  s.summary = "a rack application"
+  #s.license = "MIT"
 
-  s.require_path    = "lib"
-  #s.autorequire     = "rufus-verbs"
-  s.test_file     = "test/test.rb"
-  s.has_rdoc      = true
-  s.extra_rdoc_files  = [ 'README.txt' ]
+  s.require_path = "lib"
+  #s.autorequire = "rufus-verbs"
+  s.test_file = "test/test.rb"
+  s.has_rdoc = true
+  s.extra_rdoc_files = [ 'README.txt' ]
 
   [ 'rack' ].each do |d|
     s.requirements << d
@@ -120,7 +120,7 @@ task :upload_website => [ :clean, :rdoc ] do
 
   sh "rsync -azv -e ssh html/rufus-sixjo #{account}:#{webdir}/"
 
-  sh "mv html/rufus-verbs html/rufus_sixjo"
+  sh "mv html/rufus-sixjo html/rufus_sixjo"
   sh "rsync -azv -e ssh html/rufus_sixjo #{account}:#{webdir}/"
 end
 

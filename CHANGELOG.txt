@@ -2,7 +2,7 @@
 = rufus-sixjo CHANGELOG.txt
 
 
-== rufus-sixjo - 0.1.1   not yet released
+== rufus-sixjo - 0.1.1   released 2008/08/28
 
 - todo  #21693 : added set_last_modified() throws 204 if needed)
 - todo  #21689 : added set_etag() (throws 304 if needed)
