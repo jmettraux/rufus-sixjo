@@ -3,7 +3,7 @@
 
 == what is it ?
 
-A 'Rack application' for
+A 'Rack application' for RESTfully serving stuff (the RESTful last mile is up to you). Heavily Sinatra-inspired but less polished and... Well Sixjo is not a framework.
 
 
 == features
