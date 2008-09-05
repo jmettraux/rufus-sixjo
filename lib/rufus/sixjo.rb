@@ -187,8 +187,8 @@ module Rufus
 
         def method_missing (m, *args)
 
-          l = @locals[m.to_sym]
-          return l if l != nil
+          s = m.to_sym
+          return @locals[s] if @locals.has_key?(s)
 
           @context.send(m, *args)
         end
@@ -205,6 +205,8 @@ module Rufus
       def erb (template, options = {})
 
         content = File.read("views/#{template}.erb")
+          #
+          # TODO : make views/ configurable
 
         l = options[:locals]
         l = Local.new(self, l || {}) unless l.is_a?(Local)

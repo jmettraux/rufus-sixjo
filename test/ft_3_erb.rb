@@ -32,6 +32,10 @@ module ErbApp
   get '/reckless' do
     erb :view1
   end
+
+  get '/good3' do
+    erb :view0, :whatever => true, :locals => { :life => nil }
+  end
 end
 
 class ErbTest < Test::Unit::TestCase
@@ -50,13 +54,19 @@ class ErbTest < Test::Unit::TestCase
     assert_equal 500, get('/').status
 
     assert_equal 200, get('/good').status
-    assert_equal 'this is view0, life is good', @response.body.strip
+    assert_equal 'this is view0, life is good', @response.body
 
     assert_equal 200, get('/good2').status
-    assert_equal 'this is view0, life is good', @response.body.strip
+    assert_equal 'this is view0, life is good', @response.body
 
     assert_equal 200, get('/reckless').status
     assert_equal '/reckless', @response.body.strip
+  end
+
+  def test_1
+
+    assert_equal 200, get('/good3').status
+    assert_equal 'this is view0, life is ', @response.body
   end
 end
 

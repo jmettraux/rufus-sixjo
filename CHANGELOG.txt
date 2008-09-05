@@ -1,6 +1,12 @@
 
 = rufus-sixjo CHANGELOG.txt
 
+
+== rufus-sixjo - 0.1.3   not yet released
+
+- bug   #21830 : 500 in erb when local had a nil value
+
+
 == rufus-sixjo - 0.1.2   released 2008/09/05
 
 - todo  #21822 : added support for HEAD
