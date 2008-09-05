@@ -119,8 +119,5 @@ task :upload_website => [ :clean, :rdoc ] do
   webdir = "/var/www/gforge-projects/rufus"
 
   sh "rsync -azv -e ssh html/rufus-sixjo #{account}:#{webdir}/"
-
-  sh "mv html/rufus-sixjo html/rufus_sixjo"
-  sh "rsync -azv -e ssh html/rufus_sixjo #{account}:#{webdir}/"
 end
 
