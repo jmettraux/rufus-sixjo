@@ -29,7 +29,7 @@ end
 
 module SixjoTestMixin
 
-  [ :post, :get, :put, :delete ].each do |v|
+  [ :post, :get, :put, :delete, :head ].each do |v|
     module_eval <<-EOS
       def #{v} (path, options={})
         @response = \

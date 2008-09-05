@@ -146,6 +146,7 @@ module Rufus
           #puts env.inspect
 
           if rm == 'POST'
+
             md = R_METHOD.match(env['QUERY_STRING'])
             rm = md[1].upcase if md
 
@@ -157,6 +158,10 @@ module Rufus
               hidden_method = request.POST['_method']
               rm = hidden_method.upcase if hidden_method
             end
+
+          elsif rm == 'HEAD'
+
+            rm = 'GET'
           end
 
           raise "unknown HTTP method '#{rm}'" unless H_METHODS.include?(rm)
@@ -261,6 +266,10 @@ module Rufus
           r.response.content_type = 'text/plain'
           r.response.body = e.to_s + "\n" + e.backtrace.join("\n")
         end
+
+        r.response.body = [] if env['REQUEST_METHOD'] == 'HEAD'
+          #
+          # remove body in case of HEAD
 
         r.response.finish
       end

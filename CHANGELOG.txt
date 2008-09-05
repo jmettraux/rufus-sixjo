@@ -1,6 +1,10 @@
 
 = rufus-sixjo CHANGELOG.txt
 
+== rufus-sixjo - 0.1.2   released 2008/09/05
+
+- todo  #21822 : added support for HEAD
+
 
 == rufus-sixjo - 0.1.1   released 2008/08/28
 
