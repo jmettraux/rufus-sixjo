@@ -2,7 +2,7 @@
 = rufus-sixjo CHANGELOG.txt
 
 
-== rufus-sixjo - 0.1.3   not yet released
+== rufus-sixjo - 0.1.3   released 2008/09/09
 
 - bug   #21830 : 500 in erb when local had a nil value
 

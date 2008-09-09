@@ -65,7 +65,7 @@ module Rufus
 
   module Sixjo
 
-    VERSION = '0.1.2'
+    VERSION = '0.1.3'
 
     #
     # Sixjo's Rack app
