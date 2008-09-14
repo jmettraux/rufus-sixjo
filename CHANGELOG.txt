@@ -1,6 +1,10 @@
 
 = rufus-sixjo CHANGELOG.txt
 
+== rufus-sixjo - 0.1.4   not yet released
+
+- todo  #21951 : simplified the last-modified check
+
 
 == rufus-sixjo - 0.1.3   released 2008/09/09
 

@@ -314,23 +314,26 @@ module Rufus
       #
       def set_last_modified (t)
 
-        t = Time.local(*t.to_a) # flatten milliseconds
+        #t = Time.local(*t.to_a) # flatten milliseconds
+        #@response.header['Last-Modified'] = t.httpdate
 
-        @response.header['Last-Modified'] = t.httpdate
+        t = t.httpdate
+        @response.header['Last-Modified'] = t
 
         sin = @request.env['HTTP_IF_MODIFIED_SINCE']
 
         return unless sin
 
-        # taken from the "Ruby Cookbook" by
-        # Lucas Carlson and Leonard Richardson
-        #
-        sin = DateTime.parse(sin)
-        sin = sin.new_offset(DateTime.now.offset - sin.offset)
-        sin = Time.local(
-          sin.year, sin.month, sin.day, sin.hour, sin.min, sin.sec, 0)
+        ## taken from the "Ruby Cookbook" by
+        ## Lucas Carlson and Leonard Richardson
+        ##
+        #sin = DateTime.parse(sin)
+        #sin = sin.new_offset(DateTime.now.offset - sin.offset)
+        #sin = Time.local(
+        #  sin.year, sin.month, sin.day, sin.hour, sin.min, sin.sec, 0)
 
-        if sin >= t
+        #if sin >= t
+        if sin == t
           throw(:done, 304) if @request.get? or @request.head?
           throw(:done, 412) # precondition failed
         end
