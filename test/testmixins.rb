@@ -32,9 +32,8 @@ module SixjoTestMixin
   [ :post, :get, :put, :delete, :head ].each do |v|
     module_eval <<-EOS
       def #{v} (path, options={})
-        @response = \
-          Rack::MockRequest.new(@app).request('#{v}'.upcase, path, options)
-        @response
+        @request = Rack::MockRequest.new(@app)
+        @response = @request.request('#{v}'.upcase, path, options)
       end
     EOS
   end
