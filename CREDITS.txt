@@ -1,5 +1,13 @@
 
 = CREDITS.txt
 
+== The main project team
+
+John Mettraux ( project lead ( john >at< openwfe.org ) )
+Kenneth Kalmer - enhanced authentication, daemonization
+
+
+== further credits
+
 Based on the fine 'Rack' gem by Christian Neukirchen : http://github.com/chneukirchen/rack
 

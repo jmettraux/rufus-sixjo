@@ -3,6 +3,7 @@
 
 == rufus-sixjo - 0.1.4   not yet released
 
+- todo  #23227 : make viewpath configurable (Kenneth Kalmer)
 - todo  #21951 : simplified the last-modified check
 
 
