@@ -54,7 +54,7 @@ module SixjoTestMixin
 
   def save_view (filename, content)
 
-    FileUtils.mkdir('views') unless File.exist?('views')
+    FileUtils.mkdir_p( File.dirname( filename ) ) unless File.exists?( File.dirname( filename ) )
 
     FileUtils.rm(filename) if File.exist?(filename)
     File.open(filename, 'w') { |f| f.write(content) }

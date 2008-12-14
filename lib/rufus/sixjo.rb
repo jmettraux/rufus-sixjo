@@ -67,6 +67,21 @@ module Rufus
 
     VERSION = '0.1.3'
 
+    class << self
+      # View path (defaults to +views+, in the current working directory)
+      @@view_path = './views'
+
+      # Return the path to the views folder
+      def view_path
+        @@view_path
+      end
+
+      # Set the base path to the views folder
+      def view_path=( path )
+        @@view_path = path
+      end
+    end
+
     #
     # Sixjo's Rack app
     #
@@ -204,7 +219,7 @@ module Rufus
 
       def erb (template, options = {})
 
-        content = File.read("views/#{template}.erb")
+        content = File.read( Sixjo.view_path + "/#{template}.erb")
           #
           # TODO : make views/ configurable
 

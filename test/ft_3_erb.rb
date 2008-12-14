@@ -36,6 +36,10 @@ module ErbApp
   get '/good3' do
     erb :view0, :whatever => true, :locals => { :life => nil }
   end
+
+  get '/nested' do
+    erb :nested0
+  end
 end
 
 class ErbTest < Test::Unit::TestCase
@@ -47,6 +51,7 @@ class ErbTest < Test::Unit::TestCase
 
     save_view('views/view0.erb', 'this is view0, life is <%= life %>')
     save_view('views/view1.erb', '<%= request.path_info %>')
+    save_view('views/nested/nested0.erb', 'this is nested0, obviously')
   end
 
   def test_0
@@ -67,6 +72,19 @@ class ErbTest < Test::Unit::TestCase
 
     assert_equal 200, get('/good3').status
     assert_equal 'this is view0, life is ', @response.body
+  end
+
+  def test_2
+
+    assert_equal 500, get('/nested').status
+
+    old_view_path = Rufus::Sixjo.view_path
+    Rufus::Sixjo.view_path = 'views/nested'
+
+    assert_equal 200, get('/nested').status
+    assert_equal 'this is nested0, obviously', @response.body
+
+    Rufus::Sixjo.view_path = old_view_path
   end
 end
 
