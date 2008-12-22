@@ -1,7 +1,8 @@
 
 = rufus-sixjo CHANGELOG.txt
 
-== rufus-sixjo - 0.1.4   not yet released
+
+== rufus-sixjo - 0.1.4   released 2008/12/22
 
 - todo  #23227 : make viewpath configurable (Kenneth Kalmer)
 - todo  #21951 : simplified the last-modified check
