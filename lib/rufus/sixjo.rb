@@ -65,7 +65,7 @@ module Rufus
 
   module Sixjo
 
-    VERSION = '0.1.3'
+    VERSION = '0.1.4'
 
     class << self
       # View path (defaults to +views+, in the current working directory)
