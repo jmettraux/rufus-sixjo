@@ -1,6 +1,6 @@
 #
 #--
-# Copyright (c) 2008, John Mettraux, jmettraux@gmail.com
+# Copyright (c) 2008-2009, John Mettraux, jmettraux@gmail.com
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -122,7 +122,7 @@ module Rufus
         rescue => e
           #puts e
           #puts e.backtrace
-          return [ 400, {}, e.to_s ]
+          return [ 400, {}, [ e.to_s ] ]
         end
 
         if block
@@ -219,7 +219,7 @@ module Rufus
 
       def erb (template, options = {})
 
-        content = File.read( Sixjo.view_path + "/#{template}.erb")
+        content = File.read(Sixjo.view_path + "/#{template}.erb")
           #
           # TODO : make views/ configurable
 
@@ -267,21 +267,24 @@ module Rufus
         begin
 
           caught = catch :done do
-            r.response.body = r.call || []
+            #r.response.body = r.call || []
+            r.response.write(r.call || '')
             nil
           end
 
           if caught
             caught = Array(caught)
             r.response.status = caught[0]
-            r.response.body = caught[1]
+            #r.response.body = caught[1]
+            r.response.write(caught[1])
           end
 
         rescue Exception => e
 
           r.response.status = 500
           r.response.content_type = 'text/plain'
-          r.response.body = e.to_s + "\n" + e.backtrace.join("\n")
+          #r.response.body = e.to_s + "\n" + e.backtrace.join("\n")
+          r.response.write(e.to_s + "\n" + e.backtrace.join("\n"))
         end
 
         r.response.body = [] if env['REQUEST_METHOD'] == 'HEAD'
@@ -302,7 +305,8 @@ module Rufus
       def redirect (path, status=303, body=nil)
         @response.status = status
         @response.location = path
-        @response.body = body || "#{status} redirecting to #{path}"
+        #@response.body = body || "#{status} redirecting to #{path}"
+        @response.write(body || "#{status} redirecting to #{path}")
         throw :done
       end
 

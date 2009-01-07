@@ -2,6 +2,11 @@
 = rufus-sixjo CHANGELOG.txt
 
 
+== rufus-sixjo - 0.1.5   released 2009/01/07
+
+- bug   #23482 : was not compatible with Rack 0.9.0. Fixed.
+
+
 == rufus-sixjo - 0.1.4   released 2008/12/22
 
 - todo  #23227 : make viewpath configurable (Kenneth Kalmer)
