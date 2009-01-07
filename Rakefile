@@ -23,6 +23,7 @@ spec = Gem::Specification.new do |s|
   s.platform = Gem::Platform::RUBY
   s.summary = "a rack application"
   #s.license = "MIT"
+  s.rubyforge_project = 'rufus'
 
   s.require_path = "lib"
   #s.autorequire = "rufus-verbs"
