@@ -24,8 +24,7 @@ module PutApp
 
   put '/car' do
     #"put : #{request.content || params[:brand]}"
-    answer = request.body.read
-    answer = params[:brand] if answer.empty?
+    answer = params[:brand] || request.body.read
     answer = request.env['rack.request.form_vars'] if answer.empty?
     "put : #{answer}"
   end
