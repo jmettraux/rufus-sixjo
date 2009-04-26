@@ -1,4 +1,3 @@
-#
 #--
 # Copyright (c) 2008-2009, John Mettraux, jmettraux@gmail.com
 #
@@ -19,12 +18,9 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
+#
+# Made in Japan.
 #++
-#
-
-#
-# "made in Japan"
-#
 
 require 'erb'
 require 'rack'
@@ -136,53 +132,53 @@ module Rufus
 
       protected
 
-        H_METHODS = [ 'GET', 'POST', 'PUT', 'DELETE', 'HEAD', 'OPTIONS' ]
-        R_METHOD = /_method=(put|delete|PUT|DELETE)/
-        R_MULTIPART = /^multipart\/form-data;/
+      H_METHODS = [ 'GET', 'POST', 'PUT', 'DELETE', 'HEAD', 'OPTIONS' ]
+      R_METHOD = /_method=(put|delete|PUT|DELETE)/
+      R_MULTIPART = /^multipart\/form-data;/
 
-        def lookup_block (env)
+      def lookup_block (env)
 
-          request_method = get_request_method(env)
+        request_method = get_request_method(env)
 
-          @routes.each do |verb, route, block|
-            next unless request_method == verb
-            next unless route.match?(env)
-            return block
-          end
-
-          nil
+        @routes.each do |verb, route, block|
+          next unless request_method == verb
+          next unless route.match?(env)
+          return block
         end
 
-        def get_request_method (env)
+        nil
+      end
 
-          rm = env['X-HTTP-Method-Override'] || env['REQUEST_METHOD']
-          rm = rm.upcase
+      def get_request_method (env)
 
-          #puts env.inspect
+        rm = env['X-HTTP-Method-Override'] || env['REQUEST_METHOD']
+        rm = rm.upcase
 
-          if rm == 'POST'
+        #puts env.inspect
 
-            md = R_METHOD.match(env['QUERY_STRING'])
-            rm = md[1].upcase if md
+        if rm == 'POST'
 
-            ct = env['CONTENT_TYPE']
+          md = R_METHOD.match(env['QUERY_STRING'])
+          rm = md[1].upcase if md
 
-            if ct and R_MULTIPART.match(ct)
-              request = Rack::Request.new(env)
-              env['_rack_request'] = request # no need to rebuild later
-              hidden_method = request.POST['_method']
-              rm = hidden_method.upcase if hidden_method
-            end
+          ct = env['CONTENT_TYPE']
 
-          elsif rm == 'HEAD'
-
-            rm = 'GET'
+          if ct and R_MULTIPART.match(ct)
+            request = Rack::Request.new(env)
+            env['_rack_request'] = request # no need to rebuild later
+            hidden_method = request.POST['_method']
+            rm = hidden_method.upcase if hidden_method
           end
 
-          raise "unknown HTTP method '#{rm}'" unless H_METHODS.include?(rm)
+        elsif rm == 'HEAD'
 
-          rm
+          rm = 'GET'
         end
+
+        raise "unknown HTTP method '#{rm}'" unless H_METHODS.include?(rm)
+
+        rm
+      end
     end
 
     #
@@ -341,17 +337,6 @@ module Rufus
 
         sin = @request.env['HTTP_IF_MODIFIED_SINCE']
 
-        return unless sin
-
-        ## taken from the "Ruby Cookbook" by
-        ## Lucas Carlson and Leonard Richardson
-        ##
-        #sin = DateTime.parse(sin)
-        #sin = sin.new_offset(DateTime.now.offset - sin.offset)
-        #sin = Time.local(
-        #  sin.year, sin.month, sin.day, sin.hour, sin.min, sin.sec, 0)
-
-        #if sin >= t
         if sin == t
           throw(:done, 304) if @request.get? or @request.head?
           throw(:done, 412) # precondition failed
